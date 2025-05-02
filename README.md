@@ -1,68 +1,68 @@
-# Weather Dashboard
+# Panel del Clima
 
-A modern weather dashboard application built with React, TypeScript, and Tailwind CSS. The app displays current weather conditions and forecasts for any city, with features like dark mode, geolocation, and interactive charts.
+Una aplicación moderna de panel del clima construida con React, TypeScript y Tailwind CSS. La app muestra las condiciones climáticas actuales y pronósticos para cualquier ciudad, con funciones como modo oscuro, geolocalización y gráficos interactivos.
 
-## Features
+## Caracteristicas
 
-- 🔍 Search weather by city name
-- 📍 Automatic geolocation detection
-- 📊 Interactive weather charts
-- 🌡️ Current weather conditions
-- 📈 24-hour forecast
-- 🌓 Dark mode support
-- 📱 Responsive design
+- 🔍 Búsqueda del clima por nombre de ciudad
+- 📍 Detección automática de geolocalización
+- 📊 Gráficos interactivos del clima
+- 🌡️ Condiciones climáticas actuales
+- 📈 Pronóstico de 24 horas
+- 🌓 Soporte para modo oscuro
+- 📱  Diseño responsivo
 
-## Prerequisites
+## Prerequisitos
 
 - Node.js (v14 or higher)
 - npm or yarn
 - OpenWeather API key
 
-## Setup
+## Configuracion
 
-1. Clone the repository:
+1. Clonar repositorio:
 ```bash
 git clone <repository-url>
 cd weather-dashboard
 ```
 
-2. Install dependencies:
+2. Instalacion de dependencias:
 ```bash
 npm install
 ```
-
-3. Create a `.env` file in the root directory and add your OpenWeather API key:
+3. Crea un archivo `.env` en el directorio raíz y agrega tu clave API de OpenWeather:
 ```
 VITE_OPENWEATHER_API_KEY=your_api_key_here
 ```
+Para obtener una clave API:
 
-To get an API key:
-1. Sign up at [OpenWeather](https://openweathermap.org/)
-2. Go to your account page
-3. Copy your API key
-4. Paste it in the `.env` file
+1.Regístrate en OpenWeather[OpenWeather](https://openweathermap.org/)
 
-## Development
+2.Ve a la página de tu cuenta
 
-To start the development server:
+3.Copia tu clave API
+
+4.Pégala en el archivo .env
+
+## Desarrollo
+Para iniciar el servidor de desarrollo:
 
 ```bash
 npm run dev
 ```
 
-The app will be available at `http://localhost:5173`
+La app estará disponible en `http://localhost:5173`
 
-## Building for Production
-
-To create a production build:
+## Construcción para Producción
+Para crear una versión de producción:
 
 ```bash
 npm run build
 ```
 
-The built files will be in the `dist` directory.
+Los archivos construidos estarán en el directorio dist.
 
-## Technologies Used
+## Tecnologias Usadas
 
 - React
 - TypeScript
