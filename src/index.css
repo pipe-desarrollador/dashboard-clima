@@ -12,6 +12,11 @@
   html {
     background-color: #f8fafc !important;
   }
+  
+  #root {
+    background: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 50%, #e0e7ff 100%) !important;
+    min-height: 100vh !important;
+  }
 }
 
 @layer components {
@@ -30,6 +35,23 @@
   .input {
     @apply w-full px-4 py-2 rounded-md border border-gray-300 dark:border-gray-700 
            bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500;
+  }
+  
+  /* Force styles for main components */
+  .bg-gradient-to-br {
+    background: linear-gradient(to bottom right, var(--tw-gradient-stops)) !important;
+  }
+  
+  .from-slate-50 {
+    --tw-gradient-from: #f8fafc !important;
+  }
+  
+  .via-blue-50 {
+    --tw-gradient-via: #eff6ff !important;
+  }
+  
+  .to-indigo-100 {
+    --tw-gradient-to: #e0e7ff !important;
   }
 }
 

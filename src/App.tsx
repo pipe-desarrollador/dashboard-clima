@@ -136,7 +136,8 @@ function App() {
       className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100" 
       style={{
         minHeight: '100vh',
-        background: 'linear-gradient(135deg, #f8fafc 0%, #e0f2fe 50%, #e0e7ff 100%)'
+        background: 'linear-gradient(135deg, #f8fafc 0%, #e0f2fe 50%, #e0e7ff 100%)',
+        backgroundAttachment: 'fixed'
       }}
     >
       {/* Header */}
