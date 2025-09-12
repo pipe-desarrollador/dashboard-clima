@@ -28,11 +28,21 @@ function App() {
   useEffect(() => {
     // Try to get user's location first, fallback to London
     if (!weather) {
+      setIsLoading(true);
+      
+      // Set a timeout to ensure we don't stay loading forever
+      const loadingTimeout = setTimeout(() => {
+        if (!weather) {
+          console.log('Loading timeout, falling back to London');
+          handleSearch('London');
+        }
+      }, 15000);
+
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           async (position) => {
             try {
-              setIsLoading(true);
+              clearTimeout(loadingTimeout);
               const weatherData = await weatherService.getWeatherByCoords(
                 position.coords.latitude,
                 position.coords.longitude
@@ -42,6 +52,7 @@ function App() {
               setForecast(forecastData);
             } catch (err) {
               console.error('Error getting weather by coordinates:', err);
+              clearTimeout(loadingTimeout);
               handleSearch('London');
             } finally {
               setIsLoading(false);
@@ -49,14 +60,16 @@ function App() {
           },
           (error) => {
             console.log('Geolocation error:', error);
+            clearTimeout(loadingTimeout);
             handleSearch('London');
           },
           {
-            timeout: 10000,
-            enableHighAccuracy: true
+            timeout: 5000,
+            enableHighAccuracy: false
           }
         );
       } else {
+        clearTimeout(loadingTimeout);
         handleSearch('London');
       }
     }
@@ -119,7 +132,7 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100" style={{minHeight: '100vh'}}>
       {/* Header */}
       <Header 
         onSearch={handleSearch} 
