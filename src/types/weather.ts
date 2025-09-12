@@ -18,6 +18,11 @@ export interface WeatherData {
   sys: {
     country: string;
   };
+  coord: {
+    lat: number;
+    lon: number;
+  };
+  visibility?: number;
 }
 
 export interface ForecastData {

@@ -44,7 +44,6 @@ export const InteractiveMapSection: React.FC = () => {
   const [panY, setPanY] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [showSearchResults, setShowSearchResults] = useState(false);
 
   // Major world cities with their coordinates
   const worldCities: MapCity[] = [
@@ -143,7 +142,6 @@ export const InteractiveMapSection: React.FC = () => {
         };
         setSelectedCity(newCity);
         setSearchQuery('');
-        setShowSearchResults(false);
       } catch (error) {
         console.error('Error searching city:', error);
       } finally {

@@ -1,16 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { 
   CalendarIcon, 
-  MapPinIcon, 
-  SunIcon, 
-  CloudIcon, 
-  CloudRainIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
   FlagIcon
 } from '@heroicons/react/24/outline';
 import { WeatherIcon } from './WeatherIcon';
-import { weatherService } from '../services/weatherService';
 import { WeatherData } from '../types/weather';
 
 interface ColombianHoliday {
@@ -35,7 +30,6 @@ export const ColombiaCalendar: React.FC = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [colombianCities, setColombianCities] = useState<ColombianCity[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
 
   // Colombian holidays and important dates
   const colombianHolidays: ColombianHoliday[] = [
