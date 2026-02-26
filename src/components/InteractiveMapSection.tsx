@@ -44,6 +44,8 @@ export const InteractiveMapSection: React.FC = () => {
   const [panY, setPanY] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [locationStatus, setLocationStatus] = useState<'idle' | 'requesting' | 'granted' | 'denied' | 'unavailable' | 'error'>('idle');
+  const [locationError, setLocationError] = useState<string | null>(null);
 
   // Major world cities with their coordinates
   const worldCities: MapCity[] = [
@@ -61,16 +63,27 @@ export const InteractiveMapSection: React.FC = () => {
     { id: 12, name: 'Los Angeles', country: 'US', lat: 34.0522, lng: -118.2437, x: 15, y: 40, temp: 26, weather: 'Clear', icon: '01d' }
   ];
 
-  useEffect(() => {
+  const requestCurrentLocation = () => {
     // Get user's current location
+    if (!navigator.geolocation) {
+      setLocationStatus('unavailable');
+      setLocationError('La geolocalización no está disponible en este navegador.');
+      return;
+    }
+
+    setLocationStatus('requesting');
+    setLocationError(null);
+
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         async (position) => {
           const { latitude, longitude } = position.coords;
           try {
+            const apiKey = weatherService.getEffectiveApiKey();
+            if (!apiKey) throw new Error('MISSING_OPENWEATHER_API_KEY');
             // Reverse geocoding to get city name
             const response = await fetch(
-              `https://api.openweathermap.org/geo/1.0/reverse?lat=${latitude}&lon=${longitude}&limit=1&appid=${import.meta.env.VITE_OPENWEATHER_API_KEY}`
+              `https://api.openweathermap.org/geo/1.0/reverse?lat=${latitude}&lon=${longitude}&limit=1&appid=${apiKey}`
             );
             const data = await response.json();
             if (data && data.length > 0) {
@@ -80,9 +93,12 @@ export const InteractiveMapSection: React.FC = () => {
                 city: data[0].name,
                 country: data[0].country
               });
+              setLocationStatus('granted');
             }
           } catch (error) {
             console.error('Error getting location name:', error);
+            setLocationStatus('error');
+            setLocationError('No se pudo obtener el nombre de la ubicación.');
             setCurrentLocation({
               lat: latitude,
               lng: longitude,
@@ -93,6 +109,19 @@ export const InteractiveMapSection: React.FC = () => {
         },
         (error) => {
           console.error('Error getting location:', error);
+          if (error.code === error.PERMISSION_DENIED) {
+            setLocationStatus('denied');
+            setLocationError('Permiso de ubicación denegado. Habilita el acceso en tu navegador y vuelve a intentarlo.');
+          } else if (error.code === error.POSITION_UNAVAILABLE) {
+            setLocationStatus('error');
+            setLocationError('La ubicación no está disponible actualmente.');
+          } else if (error.code === error.TIMEOUT) {
+            setLocationStatus('error');
+            setLocationError('La solicitud de ubicación expiró. Intenta nuevamente.');
+          } else {
+            setLocationStatus('error');
+            setLocationError('Ocurrió un error al obtener la ubicación.');
+          }
           // Fallback to a default location
           setCurrentLocation({
             lat: 40.7128,
@@ -103,6 +132,10 @@ export const InteractiveMapSection: React.FC = () => {
         }
       );
     }
+  };
+
+  useEffect(() => {
+    requestCurrentLocation();
   }, []);
 
   useEffect(() => {
@@ -183,6 +216,12 @@ export const InteractiveMapSection: React.FC = () => {
     setSelectedCity(null);
   };
 
+  const latLngToXY = (lat: number, lng: number) => {
+    const x = ((lng + 180) / 360) * 100;
+    const y = ((90 - lat) / 180) * 100;
+    return { x, y };
+  };
+
   return (
     <div className="bg-gradient-to-br from-slate-50 to-blue-50 rounded-3xl p-8 shadow-lg border border-slate-200">
       {/* Header */}
@@ -198,9 +237,23 @@ export const InteractiveMapSection: React.FC = () => {
         </div>
         
         <div className="flex items-center space-x-3">
+          {locationStatus === 'requesting' && (
+            <span className="text-xs text-slate-500">Detectando ubicación...</span>
+          )}
+          {locationStatus === 'granted' && (
+            <span className="text-xs text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full border border-emerald-200">
+              Ubicación activada
+            </span>
+          )}
+          <button
+            onClick={requestCurrentLocation}
+            className="px-4 py-2 bg-gradient-to-r from-sky-500 to-blue-600 text-white rounded-xl hover:from-sky-600 hover:to-blue-700 transition-all duration-200 transform hover:scale-105 text-sm"
+          >
+            Usar mi ubicación
+          </button>
           <button
             onClick={resetMap}
-            className="px-4 py-2 bg-gradient-to-r from-slate-600 to-slate-700 text-white rounded-xl hover:from-slate-700 hover:to-slate-800 transition-all duration-200 transform hover:scale-105"
+            className="px-4 py-2 bg-gradient-to-r from-slate-600 to-slate-700 text-white rounded-xl hover:from-slate-700 hover:to-slate-800 transition-all duration-200 transform hover:scale-105 text-sm"
           >
             Reset View
           </button>
@@ -228,6 +281,19 @@ export const InteractiveMapSection: React.FC = () => {
         </div>
       </div>
 
+      {/* Location error / help */}
+      {locationError && (
+        <div className="mt-2 mb-4 bg-amber-50 border border-amber-200 text-amber-800 text-xs rounded-xl px-3 py-2 flex items-start justify-between">
+          <span>{locationError}</span>
+          <button
+            onClick={requestCurrentLocation}
+            className="ml-3 px-2 py-1 rounded-lg bg-amber-100 hover:bg-amber-200 text-amber-900 text-xs font-medium"
+          >
+            Reintentar
+          </button>
+        </div>
+      )}
+
       {/* Map Container */}
       <div className="relative bg-gradient-to-br from-blue-100 to-indigo-100 rounded-2xl h-96 overflow-hidden border-2 border-slate-200">
         {/* Map Background Pattern */}
@@ -239,21 +305,26 @@ export const InteractiveMapSection: React.FC = () => {
 
         {/* Current Location Marker */}
         {currentLocation && (
-          <div
-            className="absolute z-20 cursor-pointer transform -translate-x-1/2 -translate-y-1/2"
-            style={{
-              left: `${50 + panX}%`,
-              top: `${50 + panY}%`,
-              transform: `translate(-50%, -50%) scale(${zoom})`
-            }}
-          >
-            <div className="w-8 h-8 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center shadow-lg border-2 border-white animate-pulse">
-              <MapPinIcon className="w-4 h-4 text-white" />
-            </div>
-            <div className="absolute top-10 left-1/2 transform -translate-x-1/2 bg-white px-2 py-1 rounded-lg shadow-md text-xs font-medium text-slate-700 whitespace-nowrap">
-              You are here
-            </div>
-          </div>
+          (() => {
+            const { x, y } = latLngToXY(currentLocation.lat, currentLocation.lng);
+            return (
+              <div
+                className="absolute z-20 cursor-pointer transform -translate-x-1/2 -translate-y-1/2"
+                style={{
+                  left: `${x + panX}%`,
+                  top: `${y + panY}%`,
+                  transform: `translate(-50%, -50%) scale(${zoom})`
+                }}
+              >
+                <div className="w-8 h-8 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center shadow-lg border-2 border-white animate-pulse">
+                  <MapPinIcon className="w-4 h-4 text-white" />
+                </div>
+                <div className="absolute top-10 left-1/2 transform -translate-x-1/2 bg-white px-2 py-1 rounded-lg shadow-md text-xs font-medium text-slate-700 whitespace-nowrap">
+                  You are here
+                </div>
+              </div>
+            );
+          })()
         )}
 
         {/* City Markers */}

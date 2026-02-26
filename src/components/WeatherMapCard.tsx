@@ -157,7 +157,7 @@ export const WeatherMapCard: React.FC = () => {
   };
 
   return (
-    <div className="bg-gradient-to-br from-slate-50 to-blue-50 rounded-3xl p-8 shadow-lg border border-slate-200 transform transition-all duration-300 hover:shadow-xl hover:scale-[1.02]">
+    <div className="bg-gradient-to-br from-slate-50 to-blue-50 rounded-3xl p-8 shadow-lg border border-slate-200 transform transition-all duration-300 hover:shadow-xl hover:scale-[1.01]">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center space-x-3">
@@ -194,7 +194,7 @@ export const WeatherMapCard: React.FC = () => {
       </div>
 
       {/* Map Container */}
-      <div className="relative bg-gray-50 rounded-lg h-64 overflow-hidden">
+      <div className="relative bg-gray-50 rounded-lg h-80 overflow-hidden">
         {/* Map Background */}
         <div 
           className="absolute inset-0 opacity-20 transition-transform duration-300"

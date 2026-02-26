@@ -4,18 +4,17 @@
 
 @layer base {
   body {
-    @apply bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white;
-    background-color: #f8fafc !important;
-    color: #1f2937 !important;
+    @apply bg-gray-100 text-gray-900;
+    margin: 0;
+    padding: 0;
   }
   
   html {
-    background-color: #f8fafc !important;
+    background-color: #f8fafc;
   }
   
   #root {
-    background: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 50%, #e0e7ff 100%) !important;
-    min-height: 100vh !important;
+    min-height: 100vh;
   }
 }
 
@@ -37,21 +36,9 @@
            bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500;
   }
   
-  /* Force styles for main components */
-  .bg-gradient-to-br {
-    background: linear-gradient(to bottom right, var(--tw-gradient-stops)) !important;
-  }
-  
-  .from-slate-50 {
-    --tw-gradient-from: #f8fafc !important;
-  }
-  
-  .via-blue-50 {
-    --tw-gradient-via: #eff6ff !important;
-  }
-  
-  .to-indigo-100 {
-    --tw-gradient-to: #e0e7ff !important;
+  /* Custom gradient for main app */
+  .app-gradient {
+    background: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 50%, #e0e7ff 100%);
   }
 }
 
@@ -60,9 +47,9 @@
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  color-scheme: light;
+  color: #1f2937;
+  background-color: #f8fafc;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;

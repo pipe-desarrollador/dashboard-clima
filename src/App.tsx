@@ -36,7 +36,7 @@ function App() {
           console.log('Loading timeout, falling back to London');
           handleSearch('London');
         }
-      }, 15000);
+      }, 5000);
 
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
@@ -53,7 +53,13 @@ function App() {
             } catch (err) {
               console.error('Error getting weather by coordinates:', err);
               clearTimeout(loadingTimeout);
-              handleSearch('London');
+              if (err instanceof Error && err.message === 'MISSING_OPENWEATHER_API_KEY') {
+                setError('Falta la clave API del clima. Ve a Configuración y agrega tu API Key.');
+                setActiveSection('settings');
+                setIsLoading(false);
+              } else {
+                handleSearch('London');
+              }
             } finally {
               setIsLoading(false);
             }
@@ -75,6 +81,18 @@ function App() {
     }
   }, []);
 
+  const getErrorMessage = (err: unknown) => {
+    if (err instanceof Error && err.message === 'MISSING_OPENWEATHER_API_KEY') {
+      return 'Falta la clave API del clima. Ve a Configuración y agrega tu API Key.';
+    }
+    const anyErr = err as any;
+    const status = anyErr?.response?.status;
+    if (status === 401) return 'API Key inválida o expirada. Revisa tu clave en Configuración.';
+    if (status === 429) return 'Límite de peticiones alcanzado. Intenta más tarde o usa otra API Key.';
+    if (status === 404) return 'Ciudad no encontrada.';
+    return 'Error al obtener datos. Revisa tu conexión o la API.';
+  };
+
   const handleSearch = async (city: string) => {
     try {
       setIsLoading(true);
@@ -86,7 +104,10 @@ function App() {
       setWeather(weatherData);
       setForecast(forecastData);
     } catch (err) {
-      setError('Ciudad no encontrada o error al obtener datos');
+      setError(getErrorMessage(err));
+      if (err instanceof Error && err.message === 'MISSING_OPENWEATHER_API_KEY') {
+        setActiveSection('settings');
+      }
       console.error(err);
     } finally {
       setIsLoading(false);
@@ -132,14 +153,7 @@ function App() {
   };
 
   return (
-    <div 
-      className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100" 
-      style={{
-        minHeight: '100vh',
-        background: 'linear-gradient(135deg, #f8fafc 0%, #e0f2fe 50%, #e0e7ff 100%)',
-        backgroundAttachment: 'fixed'
-      }}
-    >
+    <div className="min-h-screen app-gradient">
       {/* Header */}
       <Header 
         onSearch={handleSearch} 
@@ -154,7 +168,7 @@ function App() {
       <div className="flex-1">
         
         {/* Main Content Area */}
-        <div className="p-6">
+        <div className="p-6 max-w-7xl mx-auto">
           {error && (
             <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
               {error}
@@ -174,19 +188,23 @@ function App() {
           )}
           
           {isLoading ? (
-            <div className="flex justify-center items-center min-h-[400px]">
+            <div className="flex flex-col justify-center items-center min-h-[400px] space-y-6">
               <div className="relative">
                 <div className="animate-spin rounded-full h-16 w-16 border-4 border-slate-200 border-t-transparent"></div>
                 <div className="animate-spin rounded-full h-16 w-16 border-4 border-transparent border-t-indigo-500 absolute top-0 left-0" style={{animationDirection: 'reverse', animationDuration: '1.5s'}}></div>
+              </div>
+              <div className="text-center">
+                <h3 className="text-lg font-semibold text-slate-700 mb-2">Cargando datos del clima...</h3>
+                <p className="text-sm text-slate-500">Obteniendo información meteorológica</p>
               </div>
             </div>
           ) : (
             <div>
               {/* Dashboard Tab */}
               {activeSection === 'dashboard' && (
-                <div className="space-y-6">
+                <div className="space-y-8">
                   {/* Top Row */}
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
                     {/* Current Weather Card */}
                     {weather && (
                       <div className="lg:col-span-1">

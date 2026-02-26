@@ -39,7 +39,7 @@ export const CurrentWeatherCard: React.FC<CurrentWeatherCardProps> = ({ weather,
   });
 
   return (
-    <div className={`bg-gradient-to-br ${theme.gradient} rounded-3xl p-8 text-white relative overflow-hidden transform transition-all duration-500 hover:scale-105 hover:shadow-2xl border border-white/20`}>
+    <div className={`bg-gradient-to-br ${theme.gradient} rounded-3xl p-8 text-white relative overflow-hidden transform transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl border border-white/20 shadow-lg`}>
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute top-6 right-6 w-40 h-40 bg-white rounded-full opacity-20 animate-pulse"></div>
@@ -74,7 +74,7 @@ export const CurrentWeatherCard: React.FC<CurrentWeatherCardProps> = ({ weather,
 
         {/* Main Temperature */}
         <div className="flex items-center justify-between mb-8">
-          <div className="text-7xl font-bold bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent animate-pulse">
+          <div className="text-8xl font-bold bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent">
             {Math.round(weather.main.temp)}°C
           </div>
           <div className="animate-bounce">
